@@ -15,10 +15,10 @@ blocks:
             - git submodule update
             - export ANDROID_HOME=~/android-sdk/
             - mkdir -p $ANDROID_HOME/cmdline-tools
-    				- cd ~ && wget -q https://dl.google.com/android/repository/commandlinetools-linux-6514223_latest.zip -O android-commandline-tools.zip && unzip -q android-commandline-tools.zip -d "${ANDROID_HOME}/cmdline-tools"
-            - export PATH=$PATH:/opt/android-sdk/cmdline-tools/bin
+            - 'cd ~ && wget -q https://dl.google.com/android/repository/commandlinetools-linux-6514223_latest.zip -O android-commandline-tools.zip && unzip -q android-commandline-tools.zip -d "${ANDROID_HOME}/cmdline-tools"'
+            - 'export PATH=$PATH:/opt/android-sdk/cmdline-tools/bin'
             - yes | sdkmanager "ndk;21.3.6528147"
-            - export PATH=$PATH:/opt/android-sdk/ndk/21.3.6528147/
+            - 'export PATH=$PATH:/opt/android-sdk/ndk/21.3.6528147/'
             - sem-version node 12
             - cache restore
             - npm install
