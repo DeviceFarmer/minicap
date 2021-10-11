@@ -120,10 +120,17 @@ public:
 // on some devices due to manufacturer (mainly Samsung) customizations.
 int
 minicap_try_get_display_info(int32_t displayId, Minicap::DisplayInfo* info);
+// Signature for Android 12
+int
+minicap_try_get_display_info(android::PhysicalDisplayId displayId, Minicap::DisplayInfo* info);
+
 
 // Creates a new Minicap instance for the current platform.
 Minicap*
 minicap_create(int32_t displayId);
+// Signature for Android 12
+Minicap*
+minicap_create(android::PhysicalDisplayId displayId);
 
 // Frees a Minicap instance. Don't call delete yourself as it won't have
 // access to the platform-specific modifications.
