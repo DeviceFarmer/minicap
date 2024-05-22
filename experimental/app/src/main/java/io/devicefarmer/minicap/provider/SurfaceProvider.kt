@@ -22,6 +22,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import android.util.Size
 import io.devicefarmer.minicap.output.ScreenshotOutput
 import io.devicefarmer.minicap.utils.DisplayInfo
@@ -29,14 +30,18 @@ import io.devicefarmer.minicap.utils.DisplayManagerGlobal
 import io.devicefarmer.minicap.utils.SurfaceControl
 import java.io.PrintStream
 import kotlin.system.exitProcess
-
+import android.view.Surface
+import android.hardware.display.VirtualDisplay
+import io.devicefarmer.minicap.utils.DisplayManager
 /**
  * Provides screen images using [SurfaceControl]. This is pretty similar to the native version
  * of minicap but here it is done at a higher level making things a bit easier.
  */
 class SurfaceProvider(displayId: Int, targetSize: Size, orientation: Int) : BaseProvider(displayId, targetSize, orientation) {
     constructor(display: Int) : this(display, currentScreenSize(), currentRotation())
-
+    private var virtualDisplay: VirtualDisplay? = null
+    private var displayManager: DisplayManager? = null
+    private var m_displayId : Int = 0;
     companion object {
         private fun currentScreenSize(): Size {
             return currentDisplayInfo().run {
@@ -82,22 +87,31 @@ class SurfaceProvider(displayId: Int, targetSize: Size, orientation: Int) : Base
     private fun initSurface(l: ImageReader.OnImageAvailableListener) {
         //must be done on the main thread
         // Support  Android 12 (preview),and resolve black screen problem
-        val secure =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.R || Build.VERSION.SDK_INT == Build.VERSION_CODES.R && "S" != Build.VERSION.CODENAME
-        display = SurfaceControl.createDisplay("minicap", secure)
-        //initialise the surface to get the display in the ImageReader
-        SurfaceControl.openTransaction()
         try {
+            val secure = Build.VERSION.SDK_INT < Build.VERSION_CODES.R || Build.VERSION.SDK_INT == Build.VERSION_CODES.R && "S" != Build.VERSION.CODENAME
+            display = SurfaceControl.createDisplay("minicap", secure)
+            //initialise the surface to get the display in the ImageReader
+            SurfaceControl.openTransaction()
             SurfaceControl.setDisplaySurface(display, getImageReader().surface)
-            SurfaceControl.setDisplayProjection(
-                display,
-                0,
-                Rect(0, 0, getScreenSize().width, getScreenSize().height),
-                Rect(0, 0, getTargetSize().width, getTargetSize().height)
-            )
+            SurfaceControl.setDisplayProjection(display, 0, Rect(0, 0, getScreenSize().width, getScreenSize().height), Rect(0, 0, getTargetSize().width, getTargetSize().height)           )
             SurfaceControl.setDisplayLayerStack(display, displayInfo.layerStack)
-        } finally {
-            SurfaceControl.closeTransaction()
+        } catch (e: NoSuchMethodException) {
+            System.err.println("Handle the exception gracefully")
+            System.err.println("NoSuchMethodException Method not found: ${e.message}")
+            System.err.println("Try Display: using DisplayManager API")
+            try {
+                //Varun Kumar:- Android 15 Support
+                if (displayManager == null) {
+                    displayManager = DisplayManager.create();
+                }
+                virtualDisplay = displayManager!!.createVirtualDisplay("minicap", getScreenSize().width, getScreenSize().height, m_displayId, getImageReader().surface);
+                virtualDisplay!!.surface =getImageReader().surface;
+            } catch (displayManagerException : Exception) {
+                System.err.println("$displayManagerException Could not create display using DisplayManager")
+            }
+        }
+        finally {
+                SurfaceControl.closeTransaction()
         }
         getImageReader().setOnImageAvailableListener(l, handler)
     }
