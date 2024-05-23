@@ -89,15 +89,6 @@ object SurfaceControl {
     }
 
     fun createDisplay(name: String?, secure: Boolean): IBinder {
-        try {
-            return clazz!!.getMethod(
-                "createDisplay",
-                String::class.java,
-                Boolean::class.javaPrimitiveType
-            ).invoke(null, name, secure) as IBinder
-        } catch (e: Exception) {
-            log.error("SurfaceControl error", e)
-            throw Error(e)
-        }
+        return clazz!!.getMethod("createDisplay", String::class.java, Boolean::class.javaPrimitiveType ).invoke(null, name, secure) as IBinder
     }
 }
