@@ -1,0 +1,25 @@
+cc_library_shared {
+    name: "minicap-shared",
+    shared_libs: [
+    ],
+    cflags: [
+        "-Werror",
+        "-Wno-macro-redefined",
+        "-Wno-sign-compare",
+    ],
+    srcs: ["src/*.cpp"],
+    export_include_dirs: ["."],
+    target: {
+      android: {
+        shared_libs: [
+            "libEGL",
+            "libcutils",
+            "libutils",
+            "libbinder",
+            "libui",
+            "liblog",
+            "libgui"
+        ]
+      },
+    },
+}
