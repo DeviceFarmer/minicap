@@ -90,11 +90,11 @@ abstract class BaseProvider(private val displayId: Int, private val targetSize: 
                 encode(image, quality, clientOutput.imageBuffer)
                 clientOutput.send()
             } else {
-                log.warn("skipping frame ($currentTime/$previousTimeStamp)")
+                log.debug("skipping frame ($currentTime/$previousTimeStamp)")
             }
             image.close()
         } else {
-            log.warn("no image available")
+            log.debug("no image available")
         }
     }
 
