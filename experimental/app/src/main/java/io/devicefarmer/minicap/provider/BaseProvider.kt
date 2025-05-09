@@ -84,6 +84,10 @@ abstract class BaseProvider(private val displayId: Int, private val targetSize: 
     override fun onImageAvailable(reader: ImageReader) {
         val image = reader.acquireLatestImage()
         val currentTime = System.currentTimeMillis()
+        if(currentTime < previousTimeStamp) {
+            // can happen if user set's device time to some point in the past, while streaming
+            previousTimeStamp = currentTime
+        }
         if (image != null) {
             if (currentTime - previousTimeStamp > framePeriodMs) {
                 previousTimeStamp = currentTime
