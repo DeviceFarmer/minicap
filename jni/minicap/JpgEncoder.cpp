@@ -50,7 +50,7 @@ JpgEncoder::getEncodedData() {
 bool
 JpgEncoder::reserveData(uint32_t width, uint32_t height) {
   if (width == mMaxWidth && height == mMaxHeight) {
-    return 0;
+    return true;
   }
 
   tjFree(mEncodedData);
