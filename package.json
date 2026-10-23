@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DeviceFarmer/minicap.git"
+    "url": "git+https://github.com/DeviceFarmer/minicap.git"
   },
   "scripts": {
     "prepublish": "make"
