@@ -21,7 +21,7 @@ jobs:
         with:
           submodules: true
 
-      # The Makefile builds prebuilt/noarch/minicap.apk with experimental/gradlew.
+      # The Makefile builds prebuilt/noarch/minicap.apk with apk/gradlew.
       - uses: actions/setup-java@v6
         with:
           distribution: temurin

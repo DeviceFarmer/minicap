@@ -4,7 +4,7 @@
 set -exo pipefail
 
 # Build project
-experimental/gradlew -p experimental assembleDebug
+apk/gradlew -p apk assembleRelease
 ndk-build NDK_DEBUG=1 1>&2
 
 # Figure out which ABI and SDK the device has
@@ -57,8 +57,8 @@ else
     adb push jni/minicap-shared/aosp/libs/android-$sdk/$abi/minicap.so $dir
     adb shell LD_LIBRARY_PATH=$dir $dir/$bin $args "$@"
   else
-    adb push experimental/app/build/outputs/apk/debug/minicap-debug.apk $dir
-    adb shell CLASSPATH=$dir/minicap-debug.apk $apk $args "$@"
+    adb push apk/app/build/outputs/apk/release/minicap-release-unsigned.apk $dir
+    adb shell CLASSPATH=$dir/minicap-release-unsigned.apk $apk $args "$@"
   fi
 fi
 

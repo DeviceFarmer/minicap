@@ -10,7 +10,7 @@ In principle, every device should work. However, since minicap relies on private
 
 The project consists of two parts. There's the main binary that can be built using NDK alone. The other part is a shared library that's built for each SDK level and each architecture inside the AOSP source tree. We ship precompiled libraries in this repo, but any modifications to the code used by these shared libraries require a recompile against the corresponding AOSP branches. This can be a major pain, but we have several utilities to help with the ordeal. If you're interested in that, [read the build instructions here](jni/minicap-shared/README.md).
 
-The shared libraries are frozen at SDK 30 (Android 11) and below. On newer Android versions, use the minicap apk in [experimental](experimental) instead, which runs via `app_process` and needs no shared library. [STF](https://github.com/DeviceFarmer/stf) selects it automatically above SDK 30.
+The shared libraries are frozen at SDK 30 (Android 11) and below. On newer Android versions, use the minicap apk in [apk](apk) instead, which runs via `app_process` and needs no shared library. [STF](https://github.com/DeviceFarmer/stf) selects it automatically above SDK 30.
 
 ## Features
 

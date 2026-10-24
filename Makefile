@@ -11,20 +11,20 @@ NDKBUILT := \
 	libs/x86_64/minicap-nopie \
 
 GRADLEBUILT := \
-	experimental/app/build/outputs/apk/debug/minicap-debug.apk
+	apk/app/build/outputs/apk/release/minicap-release-unsigned.apk
 
 default: prebuilt
 
 clean:
 	ndk-build clean
 	rm -rf prebuilt
-	experimental/gradlew -p experimental clean
+	apk/gradlew -p apk clean
 
 $(NDKBUILT):
 	ndk-build
 
 $(GRADLEBUILT):
-	experimental/gradlew -p experimental assembleDebug
+	apk/gradlew -p apk assembleRelease
 
 # It may feel a bit redundant to list everything here. However it also
 # acts as a safeguard to make sure that we really are including everything
@@ -118,7 +118,7 @@ prebuilt/x86_64/lib/%/minicap.so: jni/minicap-shared/aosp/libs/%/x86_64/minicap.
 	mkdir -p $(@D)
 	cp $^ $@
 
-prebuilt/noarch/minicap.apk: experimental/app/build/outputs/apk/debug/minicap-debug.apk
+prebuilt/noarch/minicap.apk: apk/app/build/outputs/apk/release/minicap-release-unsigned.apk
 	mkdir -p $(@D)
 	cp $^ $@
 

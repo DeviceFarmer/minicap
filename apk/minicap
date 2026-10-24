@@ -1,0 +1,4 @@
+#!/bin/sh
+# Run the apk after pushing it, e.g. with
+# adb push app/build/outputs/apk/release/minicap-release-unsigned.apk /data/local/tmp/minicap.apk
+CLASSPATH=/data/local/tmp/minicap.apk exec app_process /system/bin io.devicefarmer.minicap.Main "$@"

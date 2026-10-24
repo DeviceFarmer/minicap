@@ -9,3 +9,10 @@ updates:
   directory: "/"
   schedule:
     interval: weekly
+- package-ecosystem: gradle
+  directory: "/apk"
+  schedule:
+    interval: weekly
+  groups:
+    gradle:
+      patterns: ["*"]
