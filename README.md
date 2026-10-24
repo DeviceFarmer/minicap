@@ -10,6 +10,8 @@ In principle, every device should work. However, since minicap relies on private
 
 The project consists of two parts. There's the main binary that can be built using NDK alone. The other part is a shared library that's built for each SDK level and each architecture inside the AOSP source tree. We ship precompiled libraries in this repo, but any modifications to the code used by these shared libraries require a recompile against the corresponding AOSP branches. This can be a major pain, but we have several utilities to help with the ordeal. If you're interested in that, [read the build instructions here](jni/minicap-shared/README.md).
 
+The shared libraries are frozen at SDK 30 (Android 11) and below. On newer Android versions, use the minicap apk in [experimental](experimental) instead, which runs via `app_process` and needs no shared library. [STF](https://github.com/DeviceFarmer/stf) selects it automatically above SDK 30.
+
 ## Features
 
 * Usable to very smooth FPS depending on device. Older, weaker devices running an old version of Android can reach 10-20 FPS. Newer devices running recent versions of Android can usually reach 30-40 FPS fairly easily, but there are some exceptions. For maximum FPS we recommend running minicap at half the real vertical and horizontal resolution.
@@ -100,6 +102,8 @@ The binary enough is not enough. We'll also need to select and push the correct 
 SDK=$(adb shell getprop ro.build.version.sdk | tr -d '\r')
 adb push jni/minicap-shared/aosp/libs/android-$SDK/$ABI/minicap.so /data/local/tmp/
 ```
+
+There are no shared libraries above SDK 30. On those devices, push the minicap apk and start it with `app_process` instead, as [run.sh](run.sh) does.
 
 At this point it might be useful to check the usage:
 

@@ -2,6 +2,8 @@
 
 This module provides the shared library used by minicap. Due to the use of private APIs, it must be built inside the AOSP source tree for each SDK level and architecture. We commit and ship prebuilt libraries inside the source tree for convenience purposes, as getting them compiled can be a major obstacle. The rest of this README assumes that you wish to compile the libraries by yourself, possibly due to trust issues and/or modifications.
 
+**The shared libraries are frozen at SDK 30 (Android 11) and below.** No libraries are built or shipped for newer SDK levels. Newer Android versions use the minicap apk in [experimental](../../experimental) instead, which [STF](https://github.com/DeviceFarmer/stf) selects automatically above SDK 30. This guide is kept for rebuilding the existing libraries only.
+
 ## Requirements
 
 There are several ways to set everything up and build the libraries, so we'll just cover the way we've done it. You may adjust the process however you want, but don't expect us to hold your hand if something goes wrong. Overall getting everything set up takes a considerable amount of time, with moderate skill requirements as well. It would be best if you follow the guide unless you're very confident you can do it.
@@ -31,7 +33,7 @@ docker pull openstf/aosp:jdk7
 docker pull openstf/aosp:jdk8
 ```
 
-These images will be used to both check out code as well as to compile it.
+These images will be used to both check out code as well as to compile it. Their source, [DeviceFarmer/docker-aosp](https://github.com/DeviceFarmer/docker-aosp), is archived and no longer maintained, but the images can still be pulled.
 
 **A note about security:** containers created from these images currently run under the root user by default. If this is not acceptable to you, you will need to modify the `Makefile` and most of the commands below as you see fit.
 
@@ -156,19 +158,13 @@ There's a `Makefile` in the `aosp` folder containing a build command for each SD
 
 More likely, though, you'll actually want to use the `build-remote.sh` script at the root of the minicap repo. It's not very pretty but it works. It transmits the source code to the target machine and uses one of the docker images to run `make` inside a docker container (which is done because CoreOS doesn't come with make).
 
-First, you'll need to tell the script where you're building.
+Run the build script, passing the host you're building on:
 
 ```bash
-export BUILD_HOST=core@stf-build001
+./build-remote.sh core@stf-build001
 ```
 
-This will be passed to SSH and rsync, and is able to benefit from your SSH config (which you must set up yourself as you like).
-
-Now, run the build script:
-
-```bash
-./build-remote.sh
-```
+The host will be passed to SSH and rsync, and is able to benefit from your SSH config (which you must set up yourself as you like).
 
 The first compile will take a long, long time, since it needs to compile all dependencies on the first run, for each architecture.
 
