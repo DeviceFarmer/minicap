@@ -6,8 +6,6 @@
 /build-remote.sh
 /CONTRIBUTING.md
 /example/
-/gdb.setup
-/gdb.sh
 /jni/
 /libs/
 /Makefile
