@@ -1,2 +1,0 @@
-#!/bin/sh
-CLASSPATH=/data/local/tmp/minicap-0.1-debug.apk app_process /system/bin io.devicefarmer.minicap.Main

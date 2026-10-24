@@ -1,8 +1,0 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        jcenter()
-    }
-}
-include ':app'
-rootProject.name = "Minicap"
