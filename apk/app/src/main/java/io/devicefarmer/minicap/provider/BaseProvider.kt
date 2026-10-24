@@ -37,7 +37,7 @@ import java.nio.ByteBuffer
  * and sends the results to an output (could be a file for screenshot, or a minicap client receiving the
  * jpeg stream)
  */
-abstract class BaseProvider(private val displayId: Int, private val targetSize: Size, val rotation: Int) : SimpleServer.Listener,
+abstract class BaseProvider(protected val displayId: Int, private val targetSize: Size, val rotation: Int) : SimpleServer.Listener,
     ImageReader.OnImageAvailableListener {
 
     companion object {

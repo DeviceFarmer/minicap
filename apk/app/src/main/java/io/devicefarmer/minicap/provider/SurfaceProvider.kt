@@ -39,22 +39,22 @@ import kotlin.system.exitProcess
  * to the native version of minicap but here it is done at a higher level making things a bit
  * easier.
  */
-class SurfaceProvider(private val displayId: Int, targetSize: Size, orientation: Int) : BaseProvider(displayId, targetSize, orientation) {
-    constructor(display: Int) : this(display, currentScreenSize(), currentRotation())
+class SurfaceProvider(displayId: Int, targetSize: Size, orientation: Int) : BaseProvider(displayId, targetSize, orientation) {
+    constructor(display: Int) : this(display, currentScreenSize(display), currentRotation(display))
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(SurfaceProvider::class.java.simpleName)
 
-        private fun currentScreenSize(): Size {
-            return currentDisplayInfo().run {
+        private fun currentScreenSize(displayId: Int): Size {
+            return currentDisplayInfo(displayId).run {
                 Size(this.size.width, this.size.height)
             }
         }
 
-        private fun currentRotation(): Int = currentDisplayInfo().rotation
+        private fun currentRotation(displayId: Int): Int = currentDisplayInfo(displayId).rotation
 
-        private fun currentDisplayInfo(): DisplayInfo {
-            return DisplayManagerGlobal.getDisplayInfo(0)
+        private fun currentDisplayInfo(displayId: Int): DisplayInfo {
+            return DisplayManagerGlobal.getDisplayInfo(displayId)
         }
     }
 
@@ -86,13 +86,27 @@ class SurfaceProvider(private val displayId: Int, targetSize: Size, orientation:
     /**
      * Setup the Surface between the display and an ImageReader so that we can grab the
      * screen. Like scrcpy, the API is chosen by SDK level: `SurfaceControl.createDisplay`
-     * is gone from Android 15, which mirrors through a virtual display instead.
+     * is gone from Android 15, which mirrors through a virtual display instead. Some Android 14
+     * builds already lack it, so there a failure falls back to the virtual display, which
+     * exists from Android 14. Without a working display, minicap exits instead of streaming
+     * no frames.
      */
     private fun initSurface(l: ImageReader.OnImageAvailableListener) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            initVirtualDisplay()
-        } else {
-            initSurfaceControlDisplay()
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                initVirtualDisplay()
+            } else {
+                try {
+                    initSurfaceControlDisplay()
+                } catch (e: Exception) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) throw e
+                    log.warn("SurfaceControl display failed, falling back to a virtual display", e)
+                    initVirtualDisplay()
+                }
+            }
+        } catch (e: Exception) {
+            log.error("could not mirror display $displayId", e)
+            exitProcess(1)
         }
         getImageReader().setOnImageAvailableListener(l, handler)
     }
@@ -114,18 +128,13 @@ class SurfaceProvider(private val displayId: Int, targetSize: Size, orientation:
         }
     }
 
-    // Android 15 and later.
+    // Android 15 and later, or Android 14 as a fallback.
     private fun initVirtualDisplay() {
-        try {
-            // The virtual display has the size of the ImageReader, and the mirrored display is
-            // scaled into it.
-            virtualDisplay = DisplayManager.create().createVirtualDisplay(
-                "minicap", getTargetSize().width, getTargetSize().height, displayId, getImageReader().surface
-            )
-        } catch (e: Exception) {
-            log.error("could not mirror display $displayId into a virtual display", e)
-            exitProcess(1)
-        }
+        // The virtual display has the size of the ImageReader, and the mirrored display is
+        // scaled into it.
+        virtualDisplay = DisplayManager.create().createVirtualDisplay(
+            "minicap", getTargetSize().width, getTargetSize().height, displayId, getImageReader().surface
+        )
     }
 
     private fun initSurface() {

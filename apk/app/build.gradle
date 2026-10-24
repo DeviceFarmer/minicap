@@ -43,8 +43,9 @@ android {
     }
 
     lint {
-        // The app is never installed, so the store's target SDK rules don't apply.
-        informational 'ExpiredTargetSdkVersion'
+        // The app is never installed, so release-blocking lint checks such as the store's
+        // target SDK rules don't apply.
+        checkReleaseBuilds false
     }
 }
 

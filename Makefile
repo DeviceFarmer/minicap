@@ -23,6 +23,8 @@ clean:
 $(NDKBUILT):
 	ndk-build
 
+# Phony so that make always runs gradle, which rebuilds only what changed.
+.PHONY: $(GRADLEBUILT)
 $(GRADLEBUILT):
 	apk/gradlew -p apk assembleRelease
 

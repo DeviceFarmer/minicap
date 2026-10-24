@@ -2,7 +2,7 @@
 
 This module provides the shared library used by minicap. Due to the use of private APIs, it must be built inside the AOSP source tree for each SDK level and architecture. We commit and ship prebuilt libraries inside the source tree for convenience purposes, as getting them compiled can be a major obstacle. The rest of this README assumes that you wish to compile the libraries by yourself, possibly due to trust issues and/or modifications.
 
-**The shared libraries are frozen at SDK 30 (Android 11) and below.** No libraries are built or shipped for newer SDK levels. Newer Android versions use the minicap apk in [experimental](../../experimental) instead, which [STF](https://github.com/DeviceFarmer/stf) selects automatically above SDK 30. This guide is kept for rebuilding the existing libraries only.
+**The shared libraries are frozen at SDK 30 (Android 11) and below.** No libraries are built or shipped for newer SDK levels. Newer Android versions use the minicap apk in [apk](../../apk) instead, which [STF](https://github.com/DeviceFarmer/stf) selects automatically above SDK 30. This guide is kept for rebuilding the existing libraries only.
 
 ## Requirements
 
