@@ -20,9 +20,7 @@ import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.net.LocalSocket
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Size
 import io.devicefarmer.minicap.output.ScreenshotOutput
 import io.devicefarmer.minicap.utils.DisplayInfo
@@ -58,7 +56,6 @@ class SurfaceProvider(displayId: Int, targetSize: Size, orientation: Int) : Base
         }
     }
 
-    private val handler: Handler = Handler(Looper.getMainLooper())
     private var display: IBinder? = null
     private var virtualDisplay: VirtualDisplay? = null
 

@@ -20,6 +20,9 @@ import android.graphics.PixelFormat
 import android.media.Image
 import android.media.ImageReader
 import android.net.LocalSocket
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.util.Size
 import io.devicefarmer.minicap.output.DisplayOutput
 import io.devicefarmer.minicap.output.MinicapClientOutput
@@ -44,17 +47,23 @@ abstract class BaseProvider(protected val displayId: Int, private val targetSize
         val log = LoggerFactory.getLogger(BaseProvider::class.java.simpleName)
     }
 
+    /** Runs the image callbacks and the deferred sends, so they never run concurrently. */
+    protected val handler: Handler = Handler(Looper.getMainLooper())
     private lateinit var clientOutput: DisplayOutput
     private lateinit var imageReader: ImageReader
-    private var previousTimeStamp: Long = 0L
-    private var framePeriodMs: Long = 0
+    private val throttle = FrameThrottle()
+    private var sendScheduled = false
+    private val scheduledSend = Runnable {
+        sendScheduled = false
+        sendLatestImage(imageReader)
+    }
     private var bitmap: Bitmap? = null //is used to compress the images
 
     var quality: Int = 100
     var frameRate: Float = Float.MAX_VALUE
         set(value) {
-            this.framePeriodMs = (1000 / value).toLong()
-            log.info("framePeriodMs: $framePeriodMs")
+            throttle.periodMs = (1000 / value).toLong()
+            log.info("framePeriodMs: ${throttle.periodMs}")
             field = value
         }
 
@@ -82,19 +91,32 @@ abstract class BaseProvider(protected val displayId: Int, private val targetSize
     }
 
     override fun onImageAvailable(reader: ImageReader) {
-        val image = reader.acquireLatestImage()
-        val currentTime = System.currentTimeMillis()
-        if (image != null) {
-            if (currentTime - previousTimeStamp > framePeriodMs) {
-                previousTimeStamp = currentTime
-                encode(image, quality, clientOutput.imageBuffer)
-                clientOutput.send()
-            } else {
-                log.debug("skipping frame ($currentTime/$previousTimeStamp)")
-            }
-            image.close()
+        // A scheduled send takes the latest image, so it also covers this one.
+        if (sendScheduled) return
+        val now = SystemClock.uptimeMillis()
+        val sendAt = throttle.nextFrameAt(now)
+        if (sendAt <= now) {
+            sendLatestImage(reader)
         } else {
+            // Too early for the frame rate. Leave the image in the reader and send the latest one
+            // when the period ends, like the native minicap does. Dropping it would lose the last
+            // frame before the screen goes static.
+            log.debug("deferring frame by ${sendAt - now}ms")
+            sendScheduled = true
+            handler.postAtTime(scheduledSend, sendAt)
+        }
+    }
+
+    private fun sendLatestImage(reader: ImageReader) {
+        val image = reader.acquireLatestImage()
+        if (image == null) {
             log.debug("no image available")
+            return
+        }
+        image.use {
+            throttle.frameSent(SystemClock.uptimeMillis())
+            encode(it, quality, clientOutput.imageBuffer)
+            clientOutput.send()
         }
     }
 
