@@ -4,7 +4,7 @@ A quick and dirty example to show how minicap might be used as part of an applic
 
 ## Requirements
 
-* [Node.js](https://nodejs.org/) >= 0.12 (for this example only)
+* [Node.js](https://nodejs.org/) >= 10 (for this example only)
 * [ADB](http://developer.android.com/intl/ja/tools/help/adb.html)
 * An Android device with USB debugging enabled.
 
