@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.7.4 (2026-11-07)
+
+* Install java 17 on CI by @koral-- in https://github.com/DeviceFarmer/minicap/pull/77
+* Update OS image from Ubuntu 20.04 to 22.04 by @koral-- in https://github.com/DeviceFarmer/minicap/pull/81
+* Update OS image from Ubuntu 20.04 to 22.04 by @koral-- in https://github.com/DeviceFarmer/minicap/pull/82
+* fixbug : JpgEncoder::reserveData  return true when not need malloc me… by @PennyWang-Tank in https://github.com/DeviceFarmer/minicap/pull/78
+* chore: freeze native minicap.so at API 30 and below by @koral-- in https://github.com/DeviceFarmer/minicap/pull/85
+* feat: move the apk out of experimental and modernize its build by @koral-- in https://github.com/DeviceFarmer/minicap/pull/86
+* Bump org.slf4j:slf4j-api from 2.0.17 to 2.0.20 in /apk in the gradle group by @dependabot[bot] in https://github.com/DeviceFarmer/minicap/pull/87
+* fix: keep the apk stream going after clock changes and static screens by @koral-- in https://github.com/DeviceFarmer/minicap/pull/88
+* Update ws in the WebSocket example by @koral-- in https://github.com/DeviceFarmer/minicap/pull/89
+
+### New Contributors
+
+* @PennyWang-Tank made their first contribution in https://github.com/DeviceFarmer/minicap/pull/78
+* @dependabot[bot] made their first contribution in https://github.com/DeviceFarmer/minicap/pull/87
+
+**Full Changelog**: https://github.com/DeviceFarmer/minicap/compare/v2.7.3...v2.7.4
+
 ## 2.7.3 (2025-05-19)
 
 * [Issue 72] reduce logs that could get output per frame by @pcrepieux in https://github.com/DeviceFarmer/minicap/pull/75
