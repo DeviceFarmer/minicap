@@ -27,8 +27,7 @@ import io.devicefarmer.minicap.utils.DisplayInfo
 import io.devicefarmer.minicap.utils.DisplayManager
 import io.devicefarmer.minicap.utils.DisplayManagerGlobal
 import io.devicefarmer.minicap.utils.SurfaceControl
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import io.devicefarmer.minicap.utils.Logger
 import java.io.PrintStream
 import kotlin.system.exitProcess
 
@@ -41,7 +40,7 @@ class SurfaceProvider(displayId: Int, targetSize: Size, orientation: Int) : Base
     constructor(display: Int) : this(display, currentScreenSize(display), currentRotation(display))
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(SurfaceProvider::class.java.simpleName)
+        private val log: Logger = Logger(SurfaceProvider::class.java.simpleName)
 
         private fun currentScreenSize(displayId: Int): Size {
             return currentDisplayInfo(displayId).run {
