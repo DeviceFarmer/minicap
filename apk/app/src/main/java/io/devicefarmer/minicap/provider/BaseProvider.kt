@@ -28,7 +28,7 @@ import io.devicefarmer.minicap.output.DisplayOutput
 import io.devicefarmer.minicap.output.MinicapClientOutput
 import io.devicefarmer.minicap.SimpleServer
 import io.devicefarmer.minicap.utils.DisplayManagerGlobal
-import org.slf4j.LoggerFactory
+import io.devicefarmer.minicap.utils.Logger
 import java.io.OutputStream
 import java.io.PrintStream
 import java.nio.ByteBuffer
@@ -44,7 +44,7 @@ abstract class BaseProvider(protected val displayId: Int, private val targetSize
     ImageReader.OnImageAvailableListener {
 
     companion object {
-        val log = LoggerFactory.getLogger(BaseProvider::class.java.simpleName)
+        val log = Logger(BaseProvider::class.java.simpleName)
     }
 
     /** Runs the image callbacks and the deferred sends, so they never run concurrently. */
@@ -101,7 +101,7 @@ abstract class BaseProvider(protected val displayId: Int, private val targetSize
             // Too early for the frame rate. Leave the image in the reader and send the latest one
             // when the period ends, like the native minicap does. Dropping it would lose the last
             // frame before the screen goes static.
-            log.debug("deferring frame by ${sendAt - now}ms")
+            log.debug { "deferring frame by ${sendAt - now}ms" }
             sendScheduled = true
             handler.postAtTime(scheduledSend, sendAt)
         }
@@ -110,7 +110,7 @@ abstract class BaseProvider(protected val displayId: Int, private val targetSize
     private fun sendLatestImage(reader: ImageReader) {
         val image = reader.acquireLatestImage()
         if (image == null) {
-            log.debug("no image available")
+            log.debug { "no image available" }
             return
         }
         image.use {
